@@ -13,7 +13,7 @@
 set -ex
 
 # Start a local testnet on port 2000; set to stop on exit.
-./node_modules/.bin/ganache-cli -i 999 -p 2000 -a 1000 -m "hill law jazz limb penalty escape public dish stand bracket blue jar" >/dev/null & netpid=$!
+./node_modules/.bin/ganache-cli -i 999 -p 2000 -a 1000 -m "hill law jazz limb penalty escape public dish stand bracket blue jar" & netpid=$!
 trap "kill $netpid" EXIT
 
 # Wait until it's up, then use it for the deployment.
@@ -26,6 +26,7 @@ export SETH_STATUS=yes
 export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
 bin/deploy-fab && . load-fab-unknown
 bin/deploy     && . load-env-unknown
+
 cd ../..
 
 cd lib/maker-otc
@@ -35,8 +36,13 @@ export ETH_GAS=${ETH_GAS:-"4000000"}
 export ETH_FROM=$(seth rpc eth_coinbase)
 export SETH_STATUS=yes
 export ETH_RPC_ACCOUNTS=yes # Don't use ethsign
+export ETH_GAS=100000000
 
 dapp build
+
+seth send $SAI_PIP "poke(bytes32)" $(seth --to-word $(seth --to-wei 400 eth))
+seth send $SAI_MOM "setCap(uint256)" $(seth --to-uint256 $(seth --to-wei 1000 eth))
+
 OTC=$(dapp create MatchingMarket 1577836800) ##this is some random date in 2020
 addr1="0xc226f3cd13d508bc319f4f4290172748199d6612"
 addr2="0x7ba25f791fa76c3ef40ac98ed42634a8bc24c238"

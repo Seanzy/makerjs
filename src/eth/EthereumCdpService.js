@@ -59,7 +59,9 @@ export default class EthereumCdpService extends PrivateService {
     const hexCdpId = contract.numberToBytes32(cdpId);
     const parsedAmount = ethersUtils.parseEther(amount);
 
-    //cdp must have peth locked inside it
+    // cdp must have sufficient peth locked inside it for this to pass.  TODO: add a guard to check this
+    // cdp must have permission to move Dai
+
     return tubContract
       .draw(hexCdpId, parsedAmount)
       .then(transaction => ethersProvider.waitForTransaction(transaction.hash))

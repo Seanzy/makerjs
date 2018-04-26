@@ -1,13 +1,27 @@
 import EthereumCdpService from '../../src/eth/EthereumCdpService';
+import tokens from '../../contracts/tokens';
+import contracts from '../../contracts/contracts';
 
 let createdCdpService;
+let createdCdpId;
 
 beforeAll(() => {
   return createdCdpService = EthereumCdpService.buildTestService();
 });
 
+function openCdp(){
+  createdCdpService = EthereumCdpService.buildTestService();
+  return createdCdpService.manager().authenticate()
+    .then(() => createdCdpService.openCdp())
+    .onMined()
+    .then(cdp => cdp.getCdpId())
+    .then(cdpId => {
+      createdCdpId = cdpId;
+    });
+}
+
 test('should open a CDP and get cdp ID', done => {
-  createdCdpService.manager().authenticate().then(() => {
+  return createdCdpService.manager().authenticate().then(() => {
     createdCdpService.openCdp()
     .onMined()
     .then(cdp => cdp.getCdpId())
@@ -83,3 +97,58 @@ test('should be able to lock eth in a cdp', done => {
     });
   });
 }, 20000);
+
+/*
+test.skip('should lock 2 Peth and draw 1 Dai from a cdp', done => {
+  let drawnAmount;
+
+  lockEth('2')
+  .then(() => {
+    const contract = createdCdpService.get('smartContract'),
+     tubContract = contract.getContractByName(contracts.TUB),
+     daiToken = createdCdpService.get('token').getToken(tokens.DAI);
+    
+     return Promise.all([
+       daiToken.approveUnlimited(tubContract.address),
+       tubContract.chi(),
+       tubContract.rhi(),
+       tubContract.era(),
+       tubContract.cap(),
+      ])
+    })
+  .then(results => console.log('chi, rhi, era, and cap are: ', results.slice(1,5)))
+  .then(() => createdCdpService.drawDai(createdCdpId, '1')) //testnet price feed configured to be 400 USD per eth
+  .then(() => createdCdpService.getCdpInfo(createdCdpId))
+  .then(result => {
+    console.log(result);
+    drawnAmount = result.art.toString();
+    expect(drawnAmount).toBe('1');
+    // check { _bn: <BN: 33b2e3c9fd0803ce8000000> } value
+    done();
+  });
+}, 30000);
+
+test.skip('should draw 10 dai and then wipe 5 from a cdp', done => {
+  let drawnAmount;
+
+  drawDai('10').then(cdpId => {
+    createdCdpService.getCdpInfo(createdCdpId)
+        .then(result => {
+          console.log(result);
+          drawnAmount = result.art.toString();
+          expect(drawnAmount).toBe('10');
+        })
+        .then(createdCdpService.wipeDai(cdpId, '5')) //testnet price feed configured to be 100 USD per eth
+        .then(result => {
+          console.log(result)
+          expect(result).toBeFalsy();    
+          createdCdpService.getCdpInfo(createdCdpId)
+            .then(result => {
+              drawnAmount = result.art.toString();
+              expect(drawnAmount).toBe('5');
+              done();
+            }); 
+        });
+  });
+}, 30000);
+*/

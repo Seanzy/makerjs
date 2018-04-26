@@ -20,6 +20,24 @@ export default class SmartContractService extends PublicService {
     return service;
   }
 
+  static buildInfuraTestService(web3 = null) {
+    const service = new SmartContractService();
+    web3 =
+      web3 ||
+      Web3Service.buildInfuraService(
+        'kovan',
+        '63754feec6708219926754283dba5113fc55184b3d6a5276ca3af1724818db4f'
+      );
+
+    service
+      .manager()
+      .inject('log', web3.get('log'))
+      .inject('web3', web3);
+
+    //console.log('web3 is: ', web3);
+    return service;
+  }
+
   constructor(name = 'smartContract') {
     super(name, ['web3', 'log']);
     injectPadStart();
