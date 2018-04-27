@@ -20,6 +20,14 @@ function openCdp(){
     });
 }
 
+function lockEth(amount){
+  return openCdp()
+    .then(() => createdCdpService.lockEth(createdCdpId, amount))
+    .onMined()
+    .then(cdp => cdp.getCdpInfo())
+}
+
+
 test('should open a CDP and get cdp ID', done => {
   return createdCdpService.manager().authenticate().then(() => {
     createdCdpService.openCdp()
@@ -78,24 +86,16 @@ test('should be able to lock eth in a cdp', done => {
   let firstInfoCall;
   let cdpId;
 
-  createdCdpService.manager().authenticate().then(() => {
-    const cdp = createdCdpService.openCdp();
-    cdp._businessObject.getCdpId().then(id => {
-      cdpId = id;
-      createdCdpService.getCdpInfo(id)
-      .then(result => firstInfoCall = result)
-      .then(() => createdCdpService.lockEth(id, '.1'))
-      .then(txn => {
-        txn.onMined();
-        createdCdpService.getCdpInfo(cdpId)
-        .then(secondInfoCall => {
-          expect(firstInfoCall.ink.toString()).toEqual('0');
-          expect(secondInfoCall.ink.toString()).toEqual('100000000000000000');
-          done();
-        });
-      });
+    openCdp()
+    .then(() => createdCdpService.getCdpInfo(createdCdpId))
+    .then(result => firstInfoCall = result)
+    .then(() => createdCdpService.lockEth(createdCdpId, '.1'))
+    .then(() => createdCdpService.getCdpInfo(createdCdpId))
+    .then(secondInfoCall => {
+      expect(firstInfoCall.ink.toString()).toEqual('0');
+      expect(secondInfoCall.ink.toString()).toEqual('100000000000000000');
+      done();
     });
-  });
 }, 20000);
 
 /*
