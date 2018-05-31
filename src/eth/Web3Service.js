@@ -18,20 +18,25 @@ export default class Web3Service extends PrivateService {
     statusTimerDelay = 5000,
     suppressOutput = true
   ) {
-    const service = new Web3Service();
+    // const service = new Web3Service();
 
-    service
-      .manager()
-      .inject('log', suppressOutput ? new NullLogger() : new ConsoleLogger())
-      .inject('timer', new TimerService())
-      .settings({
-        usePresetProvider: true,
-        privateKey: privateKey,
-        provider: { type: Web3ProviderType.TEST },
-        statusTimerDelay: statusTimerDelay
-      });
+    // service
+    //   .manager()
+    //   .inject('log', suppressOutput ? new NullLogger() : new ConsoleLogger())
+    //   .inject('timer', new TimerService())
+    //   .settings({
+    //     usePresetProvider: true,
+    //     privateKey: privateKey,
+    //     provider: { type: Web3ProviderType.TEST },
+    //     statusTimerDelay: statusTimerDelay
+    //   });
 
-    return service;
+    // return service;
+
+    return this.buildInfuraService(
+      'kovan',
+      '0xa69d30145491b4c1d55e52453cabb2e73a9daff6326078d49376449614d2f700'
+    );
   }
 
   static buildInfuraService(network, privateKey = null) {

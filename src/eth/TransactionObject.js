@@ -102,7 +102,7 @@ export default class TransactionObject extends TransactionLifeCycle {
           this._pending(); //set state to pending
           this._hash = tx.hash;
           return Promise.any([
-            this._ethersProvider.getTransaction(this._hash),
+            // this._ethersProvider.getTransaction(this._hash),
             this._ethersProvider.waitForTransaction(this._hash)
           ]);
         },
@@ -125,20 +125,21 @@ export default class TransactionObject extends TransactionLifeCycle {
           console.error(reason);
         }
       )
-      .then(
-        receipt => {
-          if (typeof this._logsParser === 'function'){
-            this._logsParser(receipt.logs);
-          }
-          if (!!receipt.gasUsed && !!gasPrice) {
-            this._fees = utils.formatEther(receipt.gasUsed.mul(gasPrice));
-          } else {
-            // eslint-disable-next-line
-            console.warn('Unable to calculate transaction fee. Gas usage or price is unavailable. Usage = ',
-              receipt.gasUsed ? receipt.gasUsed.toString() : '<not set>',
-              'Price = ', gasPrice ? gasPrice.toString() : '<not set>'
-            );
-          }
+      .then(receipt => {
+        if (typeof this._logsParser === 'function') {
+          this._logsParser(receipt.logs);
+        }
+        if (!!receipt.gasUsed && !!gasPrice) {
+          this._fees = utils.formatEther(receipt.gasUsed.mul(gasPrice));
+        } else {
+          // eslint-disable-next-line
+          console.warn(
+            'Unable to calculate transaction fee. Gas usage or price is unavailable. Usage = ',
+            receipt.gasUsed ? receipt.gasUsed.toString() : '<not set>',
+            'Price = ',
+            gasPrice ? gasPrice.toString() : '<not set>'
+          );
+        }
         this._mine(); //set state to mined
 
         //this._waitForConfirmations(receipt.blockNumber, receipt.blockHash);
