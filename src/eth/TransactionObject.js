@@ -1,3 +1,4 @@
+/*eslint no-console: ['error', { 'allow': ['error'] }] */
 import '../polyfills';
 import { utils } from 'ethers';
 import TransactionLifeCycle from '../eth/TransactionLifeCycle';
@@ -46,7 +47,6 @@ export default class TransactionObject extends TransactionLifeCycle {
 
   /*
   _waitForConfirmations(originalBlockNumber, originalBlockHash, requiredConfirmations = 3){
-
     let assertBlockHashUnchanged = newBlockNumber => {
       if (newBlockNumber < originalBlockNumber + requiredConfirmations) {
         console.log('reregistering handler: newBlockNumber: ', newBlockNumber, ' is lower than required blockNumber: ', originalBlockNumber + requiredConfirmations);
@@ -95,25 +95,20 @@ export default class TransactionObject extends TransactionLifeCycle {
 
   _getTransactionData() {
     let gasPrice = null;
-    return this._transaction
+    this._transaction
       .then(tx => {
         this._pending(); //set state to pending
         this._hash = tx.hash;
-
-        const getWithRetry = () =>
-          this._ethersProvider
-            .getTransaction(this._hash)
-            .then(tx => tx || retry());
-
-        const retry = () =>
-          new Promise((resolve, reject) =>
-            setTimeout(() => getWithRetry().then(resolve, reject), 200)
-          );
-
-        return Promise.any([
-          getWithRetry(),
-          this._ethersProvider.waitForTransaction(this._hash)
-        ]);
+        if (this._ethersProvider.chainId === 999) {
+          return Promise.any([
+            this._ethersProvider.getTransaction(this._hash),
+            this._ethersProvider.waitForTransaction(this._hash)
+          ]);
+        } else {
+          return this._ethersProvider
+            .waitForTransaction(this._hash)
+            .then(hash => hash);
+        }
       })
       .then(tx => {
         gasPrice = tx.gasPrice;
