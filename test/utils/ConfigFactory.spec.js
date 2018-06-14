@@ -81,3 +81,14 @@ test('it preserves the preset service name', () => {
   const config = ConfigFactory.create({ preset, log: { verbose: true } });
   expect(config.services.log).toEqual(['BunyanLogger', { verbose: true }]);
 });
+
+test('it overrides metamask when specified in options', () => {
+  const firstConfig = ConfigFactory.create('kovan', { overrideMetamask: true });
+  const secondConfig = ConfigFactory.create('kovan');
+  const thirdConfig = ConfigFactory.create('kovan', {
+    overrideMetamask: false
+  });
+  expect(firstConfig.services.web3[1].usePresetProvider).toEqual(false);
+  expect(secondConfig.services.web3[1].usePresetProvider).toEqual(true);
+  expect(thirdConfig.services.web3[1].usePresetProvider).toEqual(true);
+});
