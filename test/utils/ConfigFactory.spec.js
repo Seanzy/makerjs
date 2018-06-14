@@ -88,7 +88,20 @@ test('it overrides metamask when specified in options', () => {
   const thirdConfig = ConfigFactory.create('kovan', {
     overrideMetamask: false
   });
-  expect(firstConfig.services.web3.usePresetProvider).toEqual(false);
-  expect(secondConfig.services.web3.usePresetProvider).toEqual(true);
-  expect(thirdConfig.services.web3.usePresetProvider).toEqual(true);
+  const firstConfigProvider =
+    firstConfig.services.web3.usePresetProvider !== undefined
+      ? firstConfig.services.web3.usePresetProvider
+      : firstConfig.services.web3.usePresetProvider[1];
+  const secondConfigProvider =
+    secondConfig.services.web3.usePresetProvider !== undefined
+      ? secondConfig.services.web3.usePresetProvider
+      : secondConfig.services.web3.usePresetProvider[1];
+  const thirdConfigProvider =
+    thirdConfig.services.web3.usePresetProvider !== undefined
+      ? thirdConfig.services.web3.usePresetProvider
+      : thirdConfig.services.web3.usePresetProvider[1];
+
+  expect(firstConfigProvider).toEqual(false);
+  expect(secondConfigProvider).toEqual(true);
+  expect(thirdConfigProvider).toEqual(true);
 });
