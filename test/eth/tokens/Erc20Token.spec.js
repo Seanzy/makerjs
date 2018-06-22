@@ -1,8 +1,7 @@
 import tokens from '../../../contracts/tokens';
 import TestAccountProvider from '../../../src/utils/TestAccountProvider';
 import { buildTestEthereumTokenService } from '../../helpers/serviceBuilders';
-
-const utils = require('ethers').utils;
+import BigNumber from 'bignumber.js';
 
 test('get ERC20 (MKR) balance of address', done => {
   const ethereumTokenService = buildTestEthereumTokenService();
@@ -15,7 +14,7 @@ test('get ERC20 (MKR) balance of address', done => {
       return token.balanceOf(TestAccountProvider.nextAddress());
     })
     .then(balance => {
-      expect(balance).toEqual('0.0');
+      expect(balance.toString()).toEqual('0.00 MKR');
       done();
     });
 });
@@ -34,7 +33,7 @@ test('get ERC20 (MKR) allowance of address', done => {
       );
     })
     .then(allowance => {
-      expect(allowance).toBe('0.0');
+      expect(allowance.toString()).toBe('0.00 MKR');
       done();
     });
 });
@@ -62,7 +61,7 @@ test(
         );
       })
       .then(result => {
-        expect(result.toString()).toBe(allowance);
+        expect(result.toString()).toBe('10000.00 MKR');
         return token.approve(spender, '0'); //reset allowance to 0
       })
       .then(() => {
@@ -94,15 +93,10 @@ test(
         );
       })
       .then(allowance => {
-        expect(allowance).toBe(
-          utils.formatUnits(
-            utils
-              .bigNumberify(
-                '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-              )
-              .toString(),
-            token.decimals()
-          )
+        expect(allowance.toBigNumber()).toEqual(
+          BigNumber(
+            '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+          ).dividedBy('1e' + token.decimals())
         );
         done();
       });

@@ -16,7 +16,7 @@ test('get WETH allowance of address', done => {
       );
     })
     .then(allowance => {
-      expect(allowance.toString()).toBe('0.0');
+      expect(allowance.toString()).toBe('0.00 WETH');
       done();
     });
 });
@@ -31,7 +31,7 @@ test('token name and symbol are correct', done => {
     .authenticate()
     .then(() => {
       token = ethereumTokenService.getToken(tokens.WETH);
-      return token.symbol();
+      return token._contract.symbol();
     })
     .then(symbol => {
       expect(symbol).toEqual('WETH');

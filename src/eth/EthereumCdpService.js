@@ -282,7 +282,7 @@ export default class EthereumCdpService extends PrivateService {
     const totalCollateralValue = new BigNumber(_totalWethLocked)
       .div(WAD)
       .times(wethPrice.toBigNumber());
-    const systemDaiDebt = new BigNumber(daiSupply).times(targetPrice);
+    const systemDaiDebt = daiSupply.toBigNumber().times(targetPrice);
     return new BigNumber(totalCollateralValue).div(systemDaiDebt).toNumber();
   }
 

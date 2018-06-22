@@ -1,17 +1,25 @@
 import { utils } from 'ethers';
+import CurrencyUnits, { Currency } from '../CurrencyUnits';
 
 export default class Erc20Token {
-  constructor(contract, web3Service, decimals = 18, transactionManager) {
+  constructor(
+    contract,
+    web3Service,
+    decimals = 18,
+    transactionManager,
+    symbol
+  ) {
     this._contract = contract;
     this._web3Service = web3Service;
     this._decimals = decimals;
     this._transactionManager = transactionManager;
+    this.symbol = symbol;
   }
 
   allowance(tokenOwner, spender) {
     return this._contract
       .allowance(tokenOwner, spender)
-      .then(_ => this.toUserFormat(_));
+      .then(value => this.toUserFormat(value));
   }
 
   balanceOf(owner) {
@@ -28,11 +36,18 @@ export default class Erc20Token {
 
   //think of name ToDecimal?
   toUserFormat(value) {
-    return utils.formatUnits(value, this._decimals);
+    return CurrencyUnits.convert(value, this.symbol, this._decimals);
   }
 
+  // TODO should we be pickier about what input we accept here?
   toEthereumFormat(value) {
-    return utils.parseUnits(value.toString(), this._decimals);
+    const amount =
+      value instanceof Currency ? value.toNumber() : value.toString();
+    try {
+      return utils.parseUnits(amount, this._decimals);
+    } catch (err) {
+      throw new Error(`Invalid value: ${amount} / ${value}`);
+    }
   }
 
   approve(spender, value) {

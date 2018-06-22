@@ -1,17 +1,13 @@
 import Erc20Token from './Erc20Token';
 
 export default class WethToken extends Erc20Token {
-  constructor(contract, web3Service, decimals, transactionManager) {
-    super(contract, web3Service, decimals, transactionManager);
+  constructor(contract, web3Service, decimals, transactionManager, symbol) {
+    super(contract, web3Service, decimals, transactionManager, symbol);
     this._transactionManager = transactionManager;
   }
 
   name() {
     return this._contract.name();
-  }
-
-  symbol() {
-    return this._contract.symbol();
   }
 
   deposit(amount) {

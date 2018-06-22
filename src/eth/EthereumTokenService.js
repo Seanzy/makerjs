@@ -60,7 +60,8 @@ export default class EthereumTokenService extends PrivateService {
           contract,
           this.get('web3'),
           tokenVersionData.decimals,
-          this._transactionManager()
+          this._transactionManager(),
+          symbol
         );
       }
 
@@ -71,7 +72,8 @@ export default class EthereumTokenService extends PrivateService {
           tub,
           this.get('web3'),
           tokenVersionData.decimals,
-          this._transactionManager()
+          this._transactionManager(),
+          symbol
         );
       }
 
@@ -79,7 +81,8 @@ export default class EthereumTokenService extends PrivateService {
         contract,
         this.get('web3'),
         tokenVersionData.decimals,
-        this._transactionManager()
+        this._transactionManager(),
+        symbol
       );
     }
   }

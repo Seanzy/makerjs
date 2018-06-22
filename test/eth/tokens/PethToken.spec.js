@@ -14,7 +14,7 @@ test('get PETH balance of address', done => {
       return token.balanceOf(TestAccountProvider.nextAddress());
     })
     .then(balance => {
-      expect(balance.toString()).toBe('0.0');
+      expect(balance.toString()).toBe('0.00 PETH');
       done();
     });
 });
@@ -33,7 +33,7 @@ test('get PETH allowance of address', done => {
       );
     })
     .then(allowance => {
-      expect(allowance.toString()).toBe('0.0');
+      expect(allowance.toString()).toBe('0.00 PETH');
       done();
     });
 });

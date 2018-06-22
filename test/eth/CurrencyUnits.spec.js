@@ -41,6 +41,12 @@ test('converts ray', () => {
   expect(value.toString()).toBe('5.13 ETH');
 });
 
+test('converts from an arbitrary number of places', () => {
+  const rayValue = '5130000000000000000000000';
+  const value = CurrencyUnits.convert(rayValue, 'eth', 24);
+  expect(value.toString()).toBe('5.13 ETH');
+});
+
 test('prints the specified number of decimals', () => {
   const n = CurrencyUnits.MKR('1000.5447123');
   expect(n.toString(3)).toBe('1000.545 MKR');
